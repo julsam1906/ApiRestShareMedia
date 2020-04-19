@@ -10,7 +10,7 @@
 	</parent>
 	<groupId>com.sharemedia</groupId>
 	<artifactId>restservices</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>0.0.1-RELEASE</version>
 	<name>restservices</name>
 	<description>Demo project for Spring Boot</description>
 

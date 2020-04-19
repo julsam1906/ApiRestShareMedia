@@ -1,8 +1,11 @@
 package com.sharemedia.restservices.dao.impl;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
+import java.io.InputStream;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -19,7 +22,6 @@ import com.google.firebase.database.ValueEventListener;
 import com.sharemedia.restservices.dao.FilmDao;
 import com.sharemedia.restservices.model.Film;
 
-
 @Repository
 public class FilmDaoImpl implements FilmDao {
 
@@ -28,9 +30,16 @@ public class FilmDaoImpl implements FilmDao {
 	private void getFirebase() {
 
 		FirebaseOptions options = null;
+		GoogleCredentials credential;
 		try {
-			options = new FirebaseOptions.Builder().setCredentials(GoogleCredentials.getApplicationDefault())
-					.setDatabaseUrl("https://app-julien-java.firebaseio.com").build();
+
+			InputStream is = getClass().getResourceAsStream("/firebase.json");
+
+			options = new FirebaseOptions.Builder()
+			        .setCredentials(GoogleCredentials.fromStream(is))
+			        .setDatabaseUrl("https://app-julien-java.firebaseio.com")
+			        .build();
+
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -48,8 +57,7 @@ public class FilmDaoImpl implements FilmDao {
 		DatabaseReference database = FirebaseDatabase.getInstance().getReference();
 		DatabaseReference films = database.child("films");
 
-		films.push().setValueAsync(
-				new Film(film.getTitle(), film.getPlateform(), film.getUrl(), film.getDescriptif()));
+		films.push().setValueAsync(new Film(film.getTitle(), film.getPlateform(), film.getUrl(), film.getDescriptif()));
 
 	}
 
@@ -64,7 +72,6 @@ public class FilmDaoImpl implements FilmDao {
 				for (DataSnapshot snap : snapshot.getChildren()) {
 					for (DataSnapshot sn : snap.getChildren()) {
 						if (sn.getValue(String.class).equals(title)) {
-							log.info("key: " + snap.getKey());
 							snap.getRef().setValueAsync(null);
 							break;
 						}
@@ -83,10 +90,10 @@ public class FilmDaoImpl implements FilmDao {
 	}
 
 	@Override
-	public List<Film> getAll() {
+	public Map<String, Film> getAll() {
 		log.info("Debut de getAll Dao");
 		getFirebase();
-		List<Film> films = new ArrayList<Film>();
+		Map<String, Film> films = new HashMap<>();
 		DatabaseReference database = FirebaseDatabase.getInstance().getReference();
 		database.child("films").addListenerForSingleValueEvent(new ValueEventListener() {
 
@@ -94,7 +101,8 @@ public class FilmDaoImpl implements FilmDao {
 			public void onDataChange(DataSnapshot snapshot) {
 				for (DataSnapshot snap : snapshot.getChildren()) {
 					Film film = snap.getValue(Film.class);
-					films.add(film);
+					film.setKey(snap.getKey());
+					films.put(snap.getKey(), film);
 				}
 			}
 
@@ -106,6 +114,20 @@ public class FilmDaoImpl implements FilmDao {
 		});
 		log.info("Fin de getAll dao");
 		return films;
+	}
+
+	@Override
+	public void updateData(Film film, String key) {
+		getFirebase();
+		DatabaseReference database = FirebaseDatabase.getInstance().getReference();
+		DatabaseReference films = database.child("films");
+		Map<String, Object> map = new HashMap<String, Object>();
+		map.put(key + "/title", film.getTitle());
+		map.put(key + "/plateform", film.getPlateform());
+		map.put(key + "/url", film.getUrl());
+		map.put(key + "/descriptif", film.getDescriptif());
+		films.updateChildrenAsync(map);
+
 	}
 
 }

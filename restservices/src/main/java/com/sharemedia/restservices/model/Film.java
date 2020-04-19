@@ -17,6 +17,7 @@ public class Film {
 	private String plateform;
 	private String url;
 	private String descriptif;
+	private String key;
 	public String getTitle() {
 		return title;
 	}
@@ -40,6 +41,19 @@ public class Film {
 	}
 	public void setDescriptif(String descriptif) {
 		this.descriptif = descriptif;
+	}
+	
+	/**
+	 * @return the key
+	 */
+	public String getKey() {
+		return key;
+	}
+	/**
+	 * @param key the key to set
+	 */
+	public void setKey(String key) {
+		this.key = key;
 	}
 	public Film() {
 		super();
