@@ -57,7 +57,7 @@ public class RestController {
 		String json = "";
 		Map<String, Film> films = filmDao.getAll();
 		final Instant deadline = Instant.now().plus(500, ChronoUnit.MILLIS);
-		while(Instant.now().isBefore(deadline) || films.size() == 0) {
+		while(Instant.now().isBefore(deadline) && films.size() == 0) {
 		}
 
 		for (Map.Entry<String, Film> entry : films.entrySet()) {
