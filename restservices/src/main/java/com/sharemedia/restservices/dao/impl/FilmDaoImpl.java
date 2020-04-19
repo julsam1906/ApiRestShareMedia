@@ -2,17 +2,8 @@ package com.sharemedia.restservices.dao.impl;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
-import java.security.SecureRandom;
 import java.util.HashMap;
 import java.util.Map;
-
-import javax.crypto.Cipher;
-import javax.crypto.CipherInputStream;
-import javax.crypto.KeyGenerator;
-import javax.crypto.NoSuchPaddingException;
-import javax.crypto.SecretKey;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -38,29 +29,15 @@ public class FilmDaoImpl implements FilmDao {
 
 		FirebaseOptions options = null;
 		try {
-			final KeyGenerator kg = KeyGenerator.getInstance("AES");
-			kg.init(new SecureRandom(new byte[] { 1, 2, 3 }));
-			final SecretKey key = kg.generateKey();
 
-			final Cipher c = Cipher.getInstance("AES");
-			c.init(Cipher.ENCRYPT_MODE, key);
 			InputStream is = getClass().getResourceAsStream("/firebase.json");
 
-			CipherInputStream output = new CipherInputStream(is, c);
-
-			options = new FirebaseOptions.Builder().setCredentials(GoogleCredentials.fromStream(output))
-					.setDatabaseUrl("https://app-julien-java.firebaseio.com").build();
+			options = new FirebaseOptions.Builder()
+			        .setCredentials(GoogleCredentials.fromStream(is))
+			        .setDatabaseUrl("https://app-julien-java.firebaseio.com")
+			        .build();
 
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (NoSuchAlgorithmException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (NoSuchPaddingException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (InvalidKeyException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
