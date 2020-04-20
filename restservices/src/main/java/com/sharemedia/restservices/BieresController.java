@@ -21,46 +21,46 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
-import com.sharemedia.restservices.dao.impl.ZeroDechetDaoImpl;
-import com.sharemedia.restservices.model.ZeroDechet;
+import com.sharemedia.restservices.dao.impl.BieresDaoImpl;
+import com.sharemedia.restservices.model.Bieres;
 
 @Controller
 @CrossOrigin(origins = "http://localhost:3000", allowCredentials = "true")
-public class ZeroDechetController {
+public class BieresController {
 
 	@Autowired
-	private ZeroDechetDaoImpl zeroDao;
-	private Log log = LogFactory.getLog(ZeroDechetController.class);
+	private BieresDaoImpl beerDao;
+	private Log log = LogFactory.getLog(BieresController.class);
 
-	@PostMapping(value = "/sharemedia/saveZero")
+	@PostMapping(value = "/sharemedia/saveBiere")
 	@ResponseBody
-	public void saveZero(@RequestBody String zero) {
-		log.info("Zero: " + zero);
+	public void saveZero(@RequestBody String beer) {
+		log.info("Biere: " + beer);
 		Gson g = new Gson();
-		ZeroDechet p = g.fromJson(zero, ZeroDechet.class);
-		zeroDao.saveZero(p);
+		Bieres p = g.fromJson(beer, Bieres.class);
+		beerDao.saveBiere(p);
 		;
 	}
 
-	@PostMapping(value = "/sharemedia/updateZero")
+	@PostMapping(value = "/sharemedia/updateBiere")
 	@ResponseBody
-	public void updateZero(@RequestBody String zero) {
+	public void updateBiere(@RequestBody String beer) {
 		Gson g = new Gson();
-		ZeroDechet p = g.fromJson(zero, ZeroDechet.class);
-		zeroDao.updateZero(p);
+		Bieres p = g.fromJson(beer, Bieres.class);
+		beerDao.updateBiere(p);
 	}
 
-	@GetMapping(value = "/sharemedia/allZeros", produces = MediaType.APPLICATION_JSON_VALUE)
+	@GetMapping(value = "/sharemedia/allBieres", produces = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseBody
 	public String getAllZeros() {
-		Map<String, ZeroDechet> map = new HashMap<String, ZeroDechet>();
+		Map<String, Bieres> map = new HashMap<String, Bieres>();
 		String json = "";
-		Map<String, ZeroDechet> zeros = zeroDao.getAll();
+		Map<String, Bieres> beers = beerDao.getAll();
 		final Instant deadline = Instant.now().plus(500, ChronoUnit.MILLIS);
-		while ((Instant.now().isBefore(deadline)) && (zeros.size() == 0)) {
+		while ((Instant.now().isBefore(deadline)) && (beers.size() == 0)) {
 		}
 
-		for (Map.Entry<String, ZeroDechet> entry : zeros.entrySet()) {
+		for (Map.Entry<String, Bieres> entry : beers.entrySet()) {
 			map.put(entry.getKey(), entry.getValue());
 		}
 		ObjectMapper mapper = new ObjectMapper();
@@ -72,10 +72,10 @@ public class ZeroDechetController {
 		return json;
 	}
 
-	@DeleteMapping("/sharemedia/deleteZero")
+	@DeleteMapping("/sharemedia/deleteBiere")
 	@ResponseBody
 	public void deleteFilm(@RequestParam(value = "titre") String titre) {
-		zeroDao.removeZero(titre);
+		beerDao.removeBiere(titre);
 	}
 
 }
