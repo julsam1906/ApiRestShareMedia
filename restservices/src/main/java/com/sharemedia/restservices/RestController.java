@@ -25,7 +25,7 @@ import com.sharemedia.restservices.dao.impl.FilmDaoImpl;
 import com.sharemedia.restservices.model.Film;
 
 @Controller
-@CrossOrigin(origins = "http://localhost:3000", allowCredentials ="true")
+@CrossOrigin(origins = {"http://localhost:3000", "https://youtube.com"}, allowCredentials ="true")
 public class RestController {
 	
 

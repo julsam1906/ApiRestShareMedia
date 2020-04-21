@@ -51,8 +51,8 @@ public class ZeroDechetDaoImpl implements ZeroDechetDao {
 		DatabaseReference database = FirebaseDatabase.getInstance().getReference();
 		DatabaseReference films = database.child("zeros");
 
-		films.push().setValueAsync(new ZeroDechet(zero.getTitre(), zero.getImage(), zero.getAstuce(),
-				zero.getIngredients(), zero.getRecette()));
+		films.push().setValueAsync(new ZeroDechet(zero.getTitre(), zero.getImage(), zero.getRecette(),
+				zero.getAstuce(), zero.getIngredients()));
 
 	}
 

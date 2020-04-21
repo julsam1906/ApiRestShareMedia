@@ -25,7 +25,7 @@ import com.sharemedia.restservices.dao.impl.ZeroDechetDaoImpl;
 import com.sharemedia.restservices.model.ZeroDechet;
 
 @Controller
-@CrossOrigin(origins = "http://localhost:3000", allowCredentials = "true")
+@CrossOrigin(origins = {"http://localhost:3000", "https://youtube.com"}, allowCredentials = "true")
 public class ZeroDechetController {
 
 	@Autowired

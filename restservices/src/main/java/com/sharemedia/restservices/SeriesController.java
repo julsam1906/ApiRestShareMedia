@@ -25,7 +25,7 @@ import com.sharemedia.restservices.dao.SeriesDao;
 import com.sharemedia.restservices.model.Series;
 
 @Controller
-@CrossOrigin(origins = "http://localhost:3000", allowCredentials = "true")
+@CrossOrigin(origins = {"http://localhost:3000", "https://youtube.com"}, allowCredentials = "true")
 public class SeriesController {
 
 	@Autowired
