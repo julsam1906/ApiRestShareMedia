@@ -31,4 +31,4 @@ jobs:
         app-name: 'sharemedia-restspring'
         slot-name: 'production'
         publish-profile: ${{ secrets.AzureAppService_PublishProfile_fd7c8e5c21fd48ab815f4ed24ba2fe2e }}
-        package: '${{ github.workspace }}/target/*.jar'
+
