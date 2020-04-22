@@ -13,7 +13,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@preview
+    - uses: actions/checkout@v1
       with:
         repository: 'julsam1906/ApiRestShareMedia/restservices/' 
         ref: refs/heads/master
