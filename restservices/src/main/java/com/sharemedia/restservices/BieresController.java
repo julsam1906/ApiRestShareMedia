@@ -1,81 +1,55 @@
 package com.sharemedia.restservices;
 
-import java.time.Instant;
-import java.time.temporal.ChronoUnit;
-import java.util.HashMap;
-import java.util.Map;
-
+import com.sharemedia.restservices.model.Bieres;
+import com.sharemedia.restservices.service.BieresService;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.gson.Gson;
-import com.sharemedia.restservices.dao.impl.BieresDaoImpl;
-import com.sharemedia.restservices.model.Bieres;
+import java.util.List;
 
-@Controller
+@RestController
+@RequestMapping("/sharemedia")
 @CrossOrigin(origins = {"http://localhost:3000", "https://youtube.com"}, allowCredentials = "true")
 public class BieresController {
 
 	@Autowired
-	private BieresDaoImpl beerDao;
+	private BieresService bieresService;
+
 	private Log log = LogFactory.getLog(BieresController.class);
 
-	@PostMapping(value = "/sharemedia/saveBiere")
+	@PostMapping(value = "/biere/save")
 	@ResponseBody
-	public void saveZero(@RequestBody String beer) {
-		log.info("Biere: " + beer);
-		Gson g = new Gson();
-		Bieres p = g.fromJson(beer, Bieres.class);
-		beerDao.saveBiere(p);
-		;
+	public ResponseEntity<String> saveBiere(@RequestBody Bieres bieres) {
+		log.info("Biere: " + bieres);
+		bieresService.ajouterBieres(bieres);
+		return new ResponseEntity<>(HttpStatus.OK);
 	}
 
-	@PostMapping(value = "/sharemedia/updateBiere")
+	@PatchMapping(value = "/biere/update")
 	@ResponseBody
-	public void updateBiere(@RequestBody String beer) {
-		Gson g = new Gson();
-		Bieres p = g.fromJson(beer, Bieres.class);
-		beerDao.updateBiere(p);
+	public ResponseEntity<String> updateBiere(@RequestBody Bieres beer) {
+		bieresService.miseAjourBiere(beer);
+		return new ResponseEntity<>(HttpStatus.OK);
 	}
 
-	@GetMapping(value = "/sharemedia/allBieres", produces = MediaType.APPLICATION_JSON_VALUE)
+	@GetMapping(value = "/biere/all", produces = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseBody
-	public String getAllZeros() {
-		Map<String, Bieres> map = new HashMap<String, Bieres>();
-		String json = "";
-		Map<String, Bieres> beers = beerDao.getAll();
-		final Instant deadline = Instant.now().plus(500, ChronoUnit.MILLIS);
-		while ((Instant.now().isBefore(deadline)) && (beers.size() == 0)) {
-		}
-
-		for (Map.Entry<String, Bieres> entry : beers.entrySet()) {
-			map.put(entry.getKey(), entry.getValue());
-		}
-		ObjectMapper mapper = new ObjectMapper();
-		try {
-			json = mapper.writeValueAsString(map);
-		} catch (JsonProcessingException e) {
-			e.printStackTrace();
-		}
-		return json;
+	public ResponseEntity<List<Bieres>> getAllBieres() {
+		List<Bieres> bieres =  bieresService.getAllBieres();
+		return new ResponseEntity<>(bieres, HttpStatus.OK);
 	}
 
-	@DeleteMapping("/sharemedia/deleteBiere")
+	@DeleteMapping(value = "/biere/delete", produces = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseBody
-	public void deleteFilm(@RequestParam(value = "titre") String titre) {
-		beerDao.removeBiere(titre);
+	public ResponseEntity<String> deleteBiere(@RequestParam String key) {
+		bieresService.supprimerBiere(key);
+		return new ResponseEntity<>(HttpStatus.OK);
 	}
+
 
 }

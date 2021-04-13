@@ -1,34 +1,19 @@
 package com.sharemedia.restservices.dao;
 
+import java.util.List;
 import java.util.Map;
 
 import com.sharemedia.restservices.model.ZeroDechet;
 
 public interface ZeroDechetDao {
-	
-	/**
-	 * 
-	 * @param zero
-	 */
-	public void saveZero(ZeroDechet zero);
-	
-	/**
-	 * 
-	 * @param zero
-	 */
-	public void removeZero(String titre);
-	
-	/**
-	 * 
-	 * @param zero
-	 */
-	public void updateZero(ZeroDechet zero);
-	
-	/**
-	 * 
-	 * @return
-	 */
-	public Map<String, ZeroDechet> getAll();
-	
+
+    void saveZero(ZeroDechet zero);
+
+    void removeZero(String key);
+
+    void updateZero(ZeroDechet zero);
+
+    List<ZeroDechet> getAll();
+
 
 }

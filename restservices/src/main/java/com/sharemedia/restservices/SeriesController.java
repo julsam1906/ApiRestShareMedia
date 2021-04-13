@@ -1,81 +1,54 @@
 package com.sharemedia.restservices;
 
-import java.time.Instant;
-import java.time.temporal.ChronoUnit;
-import java.util.HashMap;
-import java.util.Map;
-
+import com.sharemedia.restservices.model.Series;
+import com.sharemedia.restservices.service.SeriesService;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.gson.Gson;
-import com.sharemedia.restservices.dao.SeriesDao;
-import com.sharemedia.restservices.model.Series;
+import javax.persistence.GeneratedValue;
+import java.util.List;
 
-@Controller
+@RestController
+@RequestMapping("/sharemedia")
 @CrossOrigin(origins = {"http://localhost:3000", "https://youtube.com"}, allowCredentials = "true")
 public class SeriesController {
 
-	@Autowired
-	private SeriesDao serieDao;
-	private Log log = LogFactory.getLog(SeriesController.class);
+    private Log log = LogFactory.getLog(SeriesController.class);
 
-	@PostMapping(value = "/sharemedia/saveSerie")
-	@ResponseBody
-	public void saveSerie(@RequestBody String serie) {
-		log.info("Serie: " + serie);
-		Gson g = new Gson();
-		Series p = g.fromJson(serie, Series.class);
-		serieDao.saveSerie(p);
-	}
+    @Autowired
+    private SeriesService seriesService;
 
-	@PostMapping(value = "/sharemedia/updateSerie")
-	@ResponseBody
-	public void updateZero(@RequestBody String serie) {
-		Gson g = new Gson();
-		Series p = g.fromJson(serie, Series.class);
-		serieDao.updateSerie(p);
-	}
+    @PostMapping(value = "/serie/save")
+    @ResponseBody
+    public ResponseEntity<String> saveSerie(@RequestBody Series serie) {
+        log.info("Debut series save : " +serie);
+        seriesService.ajouterSerie(serie);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
 
-	@GetMapping(value = "/sharemedia/allSeries", produces = MediaType.APPLICATION_JSON_VALUE)
-	@ResponseBody
-	public String getAllSeries() {
-		Map<String, Series> map = new HashMap<String, Series>();
-		String json = "";
-		Map<String, Series> series = serieDao.getAll();
-		final Instant deadline = Instant.now().plus(500, ChronoUnit.MILLIS);
-		while ((Instant.now().isBefore(deadline)) && (series.size() == 0)) {
-		}
+    @PatchMapping(value = "/serie/update")
+    @ResponseBody
+    public ResponseEntity<String> updateSerie(@RequestBody Series series) {
+        seriesService.miseAjourSerie(series);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
 
-		for (Map.Entry<String, Series> entry : series.entrySet()) {
-			map.put(entry.getKey(), entry.getValue());
-		}
-		ObjectMapper mapper = new ObjectMapper();
+    @GetMapping(value = "/serie/all", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseBody
+    public ResponseEntity<List<Series>> getAllSeries() {
+        List<Series> series =  seriesService.getAllSerie();
+        return new ResponseEntity<>(series, HttpStatus.OK);
+    }
 
-		try {
-			json = mapper.writeValueAsString(map);
-		} catch (JsonProcessingException e) {
-			e.printStackTrace();
-		}
-		return json;
-	}
-
-	@DeleteMapping("/sharemedia/deleteSerie")
-	@ResponseBody
-	public void deleteFilm(@RequestParam(value = "titre") String titre) {
-		serieDao.removeSerie(titre);
-	}
-
+    @DeleteMapping(value = "/serie/delete", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseBody
+    public ResponseEntity<String> deleteSerie(@RequestParam String key) {
+        seriesService.supprimerSerie(key);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
 }
